@@ -1,0 +1,42 @@
+# ===== PHP =====
+vendor/
+composer.lock
+*.log
+*.cache
+*.env
+.env.local
+.env.*.local
+.phpunit.result.cache
+
+# ===== IDE / Editor =====
+.idea/
+.vscode/
+*.swp
+*~
+
+# ===== System / OS =====
+.DS_Store
+Thumbs.db
+
+# ===== Docker =====
+docker-compose.override.yml
+**/node_modules/
+**/npm-debug.log
+**/yarn-error.log
+**/docker/*.pem
+
+# ===== PHPStorm / PhpStorm =====
+*.iml
+
+# ===== Nginx / Apache / Webserver logs =====
+logs/
+*.pid
+*.sock
+
+# ===== Public / Build Artifacts (если есть фронтенд) =====
+public/build/
+public/vendor/
+
+# ===== Misc =====
+*.zip
+*.tar.gz

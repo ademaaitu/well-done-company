@@ -1,0 +1,284 @@
+openapi: 3.0.3
+info:
+  title: Earthquake Safety Test API
+  version: 1.0.0
+  description: |
+    REST API for interactive learning modules in the Earthquake Safety Test system.
+    This specification includes module listing, scenarios retrieval, answer submission,
+    and user results retrieval.
+
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+
+tags:
+  - name: Modules
+    description: Endpoints for learning modules and scenarios.
+  - name: Results
+    description: Endpoints for answer submission and user results.
+
+paths:
+  /api/modules:
+    get:
+      tags:
+        - Modules
+      summary: List all modules
+      description: Returns all available learning modules.
+      responses:
+        "200":
+          description: Successful response with modules list.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Module"
+              examples:
+                modulesList:
+                  summary: Example modules response
+                  value:
+                    - id: 1
+                      title: Earthquake Safety Test
+                      description: Interactive safety module for earthquake preparedness.
+                    - id: 2
+                      title: Fire Evacuation Basics
+                      description: Introductory module for fire emergency response.
+
+  /api/modules/{id}/scenarios:
+    get:
+      tags:
+        - Modules
+      summary: Get module scenarios
+      description: Returns all scenarios for a given module id.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Module ID
+          schema:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          description: Successful response with scenarios list.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Scenario"
+              examples:
+                scenariosList:
+                  summary: Example scenarios response
+                  value:
+                    - id: 101
+                      module_id: 1
+                      question: What should you do first during an earthquake indoors?
+                      options:
+                        A: Run to the elevator
+                        B: Drop, Cover, and Hold On
+                        C: Open all windows
+                      correct_answer: B
+                    - id: 102
+                      module_id: 1
+                      question: What should you avoid immediately after shaking stops?
+                      options:
+                        A: Checking for injuries
+                        B: Listening to emergency updates
+                        C: Re-entering damaged buildings
+                      correct_answer: C
+        "404":
+          description: Module not found.
+
+  /api/modules/{id}/submit:
+    post:
+      tags:
+        - Results
+      summary: Submit module answers
+      description: Accepts user answers for a specific module and returns scored result.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Module ID
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/UserAnswer"
+            examples:
+              submitAnswers:
+                summary: Example answers submission
+                value:
+                  - scenario_id: 101
+                    answer: B
+                  - scenario_id: 102
+                    answer: C
+      responses:
+        "200":
+          description: Result successfully calculated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Result"
+              examples:
+                resultResponse:
+                  summary: Example result response
+                  value:
+                    user_id: 42
+                    module_id: 1
+                    score: 95
+                    recommendation: Excellent awareness. Review emergency kit checklist monthly.
+        "401":
+          description: Unauthorized. Missing or invalid bearer token.
+        "404":
+          description: Module not found.
+        "422":
+          description: Validation error in submitted answers.
+
+  /api/results/{user_id}:
+    get:
+      tags:
+        - Results
+      summary: Get user results
+      description: Returns all module results for the given user.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: integer
+            example: 42
+      responses:
+        "200":
+          description: Successful response with user results.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Result"
+              examples:
+                userResults:
+                  summary: Example results array
+                  value:
+                    - user_id: 42
+                      module_id: 1
+                      score: 95
+                      recommendation: Excellent awareness. Review emergency kit checklist monthly.
+                    - user_id: 42
+                      module_id: 3
+                      score: 70
+                      recommendation: Good start. Practice evacuation routes with your family.
+        "401":
+          description: Unauthorized. Missing or invalid bearer token.
+        "404":
+          description: User not found or no results available.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Provide bearer token in Authorization header.
+
+  schemas:
+    Module:
+      type: object
+      description: Learning module descriptor.
+      required:
+        - id
+        - title
+        - description
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Earthquake Safety Test
+        description:
+          type: string
+          example: Interactive safety module for earthquake preparedness.
+
+    Scenario:
+      type: object
+      description: Scenario/question within a module.
+      required:
+        - id
+        - module_id
+        - question
+        - options
+        - correct_answer
+      properties:
+        id:
+          type: integer
+          example: 101
+        module_id:
+          type: integer
+          example: 1
+        question:
+          type: string
+          example: What should you do first during an earthquake indoors?
+        options:
+          type: object
+          additionalProperties:
+            type: string
+          description: JSON object containing answer options.
+          example:
+            A: Run outside immediately
+            B: Drop, Cover, and Hold On
+            C: Use the elevator
+        correct_answer:
+          type: string
+          example: B
+
+    UserAnswer:
+      type: object
+      description: User-selected answer for a scenario.
+      required:
+        - scenario_id
+        - answer
+      properties:
+        scenario_id:
+          type: integer
+          example: 101
+        answer:
+          type: string
+          example: B
+
+    Result:
+      type: object
+      description: Calculated result for a user and module.
+      required:
+        - user_id
+        - module_id
+        - score
+        - recommendation
+      properties:
+        user_id:
+          type: integer
+          example: 42
+        module_id:
+          type: integer
+          example: 1
+        score:
+          type: integer
+          minimum: 0
+          maximum: 100
+          example: 95
+        recommendation:
+          type: string
+          example: Excellent awareness. Review emergency kit checklist monthly.
