@@ -1,190 +1,227 @@
 openapi: 3.0.3
 info:
   title: Earthquake Safety Test API
-  version: 1.0.0
-  description: |
-    REST API for interactive learning modules in the Earthquake Safety Test system.
-    This specification includes module listing, scenarios retrieval, answer submission,
-    and user results retrieval.
+  version: 2.0.0
+  description: Commercial-grade interactive earthquake safety learning API.
 
 servers:
   - url: http://localhost:8000
-    description: Local development server
 
 tags:
-  - name: Modules
-    description: Endpoints for learning modules and scenarios.
+  - name: Learning
   - name: Results
-    description: Endpoints for answer submission and user results.
+  - name: Admin
 
 paths:
-  /api/modules:
-    get:
-      tags:
-        - Modules
-      summary: List all modules
-      description: Returns all available learning modules.
+  /api/session/start:
+    post:
+      tags: [Learning]
+      summary: Start learning session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [user_name]
+              properties:
+                user_name: { type: string }
+                module_id: { type: integer }
+                stress_context: { type: string }
+      responses:
+        "201":
+          description: Session created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session_id: { type: string }
+                  started_at: { type: string, format: date-time }
+
+  /api/session/events:
+    post:
+      tags: [Results]
+      summary: Track session event
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [session_id, event_name]
+              properties:
+                session_id: { type: string }
+                event_name: { type: string }
+                payload: { type: object }
       responses:
         "200":
-          description: Successful response with modules list.
+          description: Event tracked
+
+  /api/resources:
+    get:
+      tags: [Learning]
+      summary: Get checklist and safety resources
+      responses:
+        "200":
+          description: Checklist and links
+
+  /api/modules:
+    get:
+      tags: [Learning]
+      summary: Get modules
+      responses:
+        "200":
+          description: Module list
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: "#/components/schemas/Module"
-              examples:
-                modulesList:
-                  summary: Example modules response
-                  value:
-                    - id: 1
-                      title: Earthquake Safety Test
-                      description: Interactive safety module for earthquake preparedness.
-                    - id: 2
-                      title: Fire Evacuation Basics
-                      description: Introductory module for fire emergency response.
 
   /api/modules/{id}/scenarios:
     get:
-      tags:
-        - Modules
-      summary: Get module scenarios
-      description: Returns all scenarios for a given module id.
+      tags: [Learning]
+      summary: Get scenarios by module and stress context
       parameters:
-        - name: id
-          in: path
+        - in: path
+          name: id
           required: true
-          description: Module ID
           schema:
             type: integer
-            example: 1
+        - in: query
+          name: stress_context
+          schema:
+            type: string
+            enum: [bus, mall, office]
       responses:
         "200":
-          description: Successful response with scenarios list.
+          description: Scenario list
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: "#/components/schemas/Scenario"
-              examples:
-                scenariosList:
-                  summary: Example scenarios response
-                  value:
-                    - id: 101
-                      module_id: 1
-                      question: What should you do first during an earthquake indoors?
-                      options:
-                        A: Run to the elevator
-                        B: Drop, Cover, and Hold On
-                        C: Open all windows
-                      correct_answer: B
-                    - id: 102
-                      module_id: 1
-                      question: What should you avoid immediately after shaking stops?
-                      options:
-                        A: Checking for injuries
-                        B: Listening to emergency updates
-                        C: Re-entering damaged buildings
-                      correct_answer: C
-        "404":
-          description: Module not found.
+
+  /api/modules/{id}/scenarios/next:
+    get:
+      tags: [Learning]
+      summary: Dynamic next scenario loader
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: stress_context
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: current_branching_id
+          schema:
+            type: string
+        - in: query
+          name: selected_option
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Next scenario or null when flow completes
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Scenario"
+                  - type: "null"
 
   /api/modules/{id}/submit:
     post:
-      tags:
-        - Results
-      summary: Submit module answers
-      description: Accepts user answers for a specific module and returns scored result.
+      tags: [Results]
+      summary: Submit session answers and score
       security:
         - bearerAuth: []
       parameters:
-        - name: id
-          in: path
+        - in: path
+          name: id
           required: true
-          description: Module ID
           schema:
             type: integer
-            example: 1
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: "#/components/schemas/UserAnswer"
-            examples:
-              submitAnswers:
-                summary: Example answers submission
-                value:
-                  - scenario_id: 101
-                    answer: B
-                  - scenario_id: 102
-                    answer: C
+              $ref: "#/components/schemas/SubmitRequest"
       responses:
         "200":
-          description: Result successfully calculated.
+          description: Structured result model
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Result"
-              examples:
-                resultResponse:
-                  summary: Example result response
-                  value:
-                    user_id: 42
-                    module_id: 1
-                    score: 95
-                    recommendation: Excellent awareness. Review emergency kit checklist monthly.
-        "401":
-          description: Unauthorized. Missing or invalid bearer token.
-        "404":
-          description: Module not found.
-        "422":
-          description: Validation error in submitted answers.
+                $ref: "#/components/schemas/ResultSummary"
 
-  /api/results/{user_id}:
+  /api/results/{user_name}:
     get:
-      tags:
-        - Results
-      summary: Get user results
-      description: Returns all module results for the given user.
+      tags: [Results]
+      summary: Get user result history
       security:
         - bearerAuth: []
       parameters:
-        - name: user_id
-          in: path
+        - in: path
+          name: user_name
           required: true
-          description: User ID
           schema:
-            type: integer
-            example: 42
+            type: string
       responses:
         "200":
-          description: Successful response with user results.
+          description: Result history
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Result"
-              examples:
-                userResults:
-                  summary: Example results array
-                  value:
-                    - user_id: 42
-                      module_id: 1
-                      score: 95
-                      recommendation: Excellent awareness. Review emergency kit checklist monthly.
-                    - user_id: 42
-                      module_id: 3
-                      score: 70
-                      recommendation: Good start. Practice evacuation routes with your family.
-        "401":
-          description: Unauthorized. Missing or invalid bearer token.
-        "404":
-          description: User not found or no results available.
+                  $ref: "#/components/schemas/ResultFull"
+
+  /api/admin/analytics-summary:
+    get:
+      tags: [Admin]
+      summary: Aggregated analytics summary
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Summary metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsSummary"
+
+  /api/admin/risk-distribution:
+    get:
+      tags: [Admin]
+      summary: Risk category distribution
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Distribution by risk category
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    risk_category:
+                      type: string
+                    total:
+                      type: integer
 
 components:
   securitySchemes:
@@ -192,93 +229,101 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: Provide bearer token in Authorization header.
 
   schemas:
     Module:
       type: object
-      description: Learning module descriptor.
-      required:
-        - id
-        - title
-        - description
       properties:
-        id:
-          type: integer
-          example: 1
-        title:
-          type: string
-          example: Earthquake Safety Test
-        description:
-          type: string
-          example: Interactive safety module for earthquake preparedness.
+        id: { type: integer }
+        name: { type: string }
+        description: { type: string }
 
     Scenario:
       type: object
-      description: Scenario/question within a module.
-      required:
-        - id
-        - module_id
-        - question
-        - options
-        - correct_answer
       properties:
-        id:
-          type: integer
-          example: 101
-        module_id:
-          type: integer
-          example: 1
-        question:
-          type: string
-          example: What should you do first during an earthquake indoors?
+        id: { type: integer }
+        module_id: { type: integer }
+        branching_id: { type: string }
+        stress_context: { type: string, nullable: true }
+        question: { type: string }
         options:
           type: object
           additionalProperties:
             type: string
-          description: JSON object containing answer options.
-          example:
-            A: Run outside immediately
-            B: Drop, Cover, and Hold On
-            C: Use the elevator
-        correct_answer:
-          type: string
-          example: B
+        correct_answer: { type: string }
+        wrong_explanation: { type: string, nullable: true }
+        next_branching_map:
+          type: object
+          additionalProperties:
+            type: string
+          nullable: true
+        branching_logic:
+          type: object
+          nullable: true
 
     UserAnswer:
       type: object
-      description: User-selected answer for a scenario.
-      required:
-        - scenario_id
-        - answer
+      required: [scenario_id, selected_option]
       properties:
-        scenario_id:
-          type: integer
-          example: 101
-        answer:
-          type: string
-          example: B
+        scenario_id: { type: integer }
+        selected_option: { type: string }
+        response_time_ms: { type: integer }
+        retries: { type: integer }
+        wrong_explanation_shown: { type: boolean }
 
-    Result:
+    SubmitRequest:
       type: object
-      description: Calculated result for a user and module.
-      required:
-        - user_id
-        - module_id
-        - score
-        - recommendation
+      required: [user_name, stress_context, answers]
       properties:
-        user_id:
-          type: integer
-          example: 42
-        module_id:
-          type: integer
-          example: 1
-        score:
-          type: integer
-          minimum: 0
-          maximum: 100
-          example: 95
+        user_name: { type: string }
+        stress_context: { type: string }
+        session_id: { type: string }
+        answers:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserAnswer"
+
+    ResultSummary:
+      type: object
+      properties:
+        session_id: { type: string }
+        user_name: { type: string }
+        module_id: { type: integer }
+        total_score: { type: integer }
+        accuracy_score: { type: integer }
+        reaction_risk_index: { type: integer }
+        stress_response_score: { type: integer }
+        overall_preparedness_percent: { type: integer }
+        risk_category:
+          type: string
+          enum: [Low, Moderate, High]
+        behavioral_analysis: { type: string }
+        personalized_checklist:
+          type: array
+          items: { type: string }
         recommendation:
           type: string
-          example: Excellent awareness. Review emergency kit checklist monthly.
+          enum: [Needs improvement, Good, Excellent]
+
+    ResultFull:
+      allOf:
+        - $ref: "#/components/schemas/ResultSummary"
+        - type: object
+          properties:
+            progress:
+              type: array
+              items:
+                type: object
+            session_json:
+              type: object
+
+    AnalyticsSummary:
+      type: object
+      properties:
+        total_sessions: { type: integer }
+        avg_accuracy_score: { type: number, format: float }
+        avg_reaction_risk_index: { type: number, format: float }
+        avg_stress_response_score: { type: number, format: float }
+        avg_overall_preparedness_percent: { type: number, format: float }
+        avg_response_time_ms: { type: number, format: float }
+        avg_retries: { type: number, format: float }
