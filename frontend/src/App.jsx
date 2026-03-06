@@ -6,6 +6,46 @@ import {
   trackSessionEvent,
 } from "./api";
 
+<<<<<<< HEAD
+=======
+const ASSET_IMAGES = Object.fromEntries(
+  Object.entries(
+    import.meta.glob("./assets/*.{png,jpg,jpeg,webp,svg}", {
+      eager: true,
+      import: "default",
+    }),
+  ).map(([path, url]) => [path.split("/").pop().toLowerCase(), url]),
+);
+
+const SCENARIO_IMAGE_MAP = {
+  s1: "situation.png",
+  s2A: "situation2A.png",
+  s2B: "situation2B.png",
+  s3A1: "situation3A1.png",
+  s3A2: "situation3A2.png",
+  s3B1: "situation3B1.png",
+  s3B2: "situation3B2.png",
+};
+
+function scenarioImageForNode(nodeId) {
+  if (!nodeId) return null;
+  const fileName = SCENARIO_IMAGE_MAP[nodeId];
+  if (!fileName) return null;
+  return ASSET_IMAGES[fileName.toLowerCase()] || null;
+}
+
+function finalImageForId(finalId) {
+  if (!finalId) return null;
+  const extensions = ["png", "jpg", "jpeg", "webp", "svg"];
+  for (const ext of extensions) {
+    const fileName = `${finalId}.${ext}`;
+    const found = ASSET_IMAGES[fileName.toLowerCase()];
+    if (found) return found;
+  }
+  return null;
+}
+
+>>>>>>> 879b184 (feat: final version)
 function localFallbackSessionId() {
   if (window.crypto?.randomUUID) {
     return window.crypto.randomUUID();
@@ -15,6 +55,10 @@ function localFallbackSessionId() {
 }
 
 function App() {
+<<<<<<< HEAD
+=======
+  const PERFECT_BONUS = 15;
+>>>>>>> 879b184 (feat: final version)
   const [view, setView] = useState("landing");
   const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -28,18 +72,42 @@ function App() {
   const [scenarioFinal, setScenarioFinal] = useState(null);
 
   const [stressStarted, setStressStarted] = useState(false);
+<<<<<<< HEAD
   const [stressTimeLeft, setStressTimeLeft] = useState(240);
   const [stressAnswers, setStressAnswers] = useState({});
+=======
+  const [stressAnswers, setStressAnswers] = useState({});
+  const [miniGameRound, setMiniGameRound] = useState(0);
+  const [miniGameSelections, setMiniGameSelections] = useState([]);
+  const [miniGameLocked, setMiniGameLocked] = useState(false);
+  const [miniGameFeedback, setMiniGameFeedback] = useState("");
+  const [miniMapLoaded, setMiniMapLoaded] = useState(false);
+  const [miniScore, setMiniScore] = useState(0);
+  const [miniCombo, setMiniCombo] = useState(0);
+  const [miniBestCombo, setMiniBestCombo] = useState(0);
+  const [miniLastSafe, setMiniLastSafe] = useState(null);
+  const [miniRoundTimeLeft, setMiniRoundTimeLeft] = useState(null);
+  const [miniTimerShake, setMiniTimerShake] = useState(false);
+  const [miniModal, setMiniModal] = useState(null);
+  const [miniEffect, setMiniEffect] = useState(null);
+>>>>>>> 879b184 (feat: final version)
 
   const [quizIndex, setQuizIndex] = useState(0);
   const [quizAnswers, setQuizAnswers] = useState({});
 
   const [result, setResult] = useState(null);
+<<<<<<< HEAD
+=======
+  const [isScenarioTransitioning, setIsScenarioTransitioning] = useState(false);
+  const [scenarioImageLoaded, setScenarioImageLoaded] = useState(false);
+  const [finalImageLoaded, setFinalImageLoaded] = useState(false);
+>>>>>>> 879b184 (feat: final version)
 
   useEffect(() => {
     void loadConfig();
   }, []);
 
+<<<<<<< HEAD
   useEffect(() => {
     if (view !== "stress-run" || !stressStarted || stressTimeLeft <= 0) {
       return;
@@ -59,6 +127,8 @@ function App() {
     return () => clearInterval(timer);
   }, [view, stressStarted, stressTimeLeft]);
 
+=======
+>>>>>>> 879b184 (feat: final version)
   const nodeMap = useMemo(() => {
     const nodes = config?.scenario?.nodes || [];
     return Object.fromEntries(nodes.map((node) => [node.id, node]));
@@ -72,8 +142,144 @@ function App() {
   const currentNode = nodeMap[scenarioNodeId] || null;
   const quizQuestions = config?.quiz?.questions || [];
   const currentQuizQuestion = quizQuestions[quizIndex] || null;
+<<<<<<< HEAD
 
   const totalScreens = 13;
+=======
+  const scenarioImageSrc = scenarioImageForNode(currentNode?.id);
+  const finalImageSrc = finalImageForId(scenarioFinal?.id);
+  const miniGameRounds = useMemo(
+    () => [
+      {
+        key: "priority",
+        title: "Раунд 1 — «Первые толчки»",
+        image: "round1.png",
+        buttons: [
+          { id: "chandelier", label: "Люстра", top: "28.9%", left: "51.7%" },
+          { id: "column", label: "Колонна", top: "44.7%", left: "18.5%" },
+          {
+            id: "showcase",
+            label: "Витрина магазина",
+            top: "73.7%",
+            left: "79.2%",
+          },
+          { id: "escalator", label: "Эскалатор", top: "57.9%", left: "65.7%" },
+        ],
+        correctSpot: "column",
+        modalCorrect:
+          "Колонны — одни из самых прочных элементов здания.\nРядом с ними меньше риск получить удар падающими предметами.",
+        wrongMessages: {
+          chandelier: "Подвесные конструкции могут упасть.",
+          showcase: "Стекло может разбиться.",
+          escalator: "Можно потерять равновесие.",
+        },
+        correctPoints: 10,
+        wrongPoints: -5,
+      },
+      {
+        key: "team_split",
+        title: "Раунд 2 — «Падают предметы»",
+        image: "round2.png",
+        buttons: [
+          {
+            id: "banner",
+            label: "Рекламный баннер",
+            top: "18.4%",
+            left: "47.2%",
+          },
+          { id: "mannequin", label: "Манекен", top: "52.6%", left: "23.6%" },
+          {
+            id: "open_space",
+            label: "Открытое пространство",
+            top: "60.5%",
+            left: "56.2%",
+          },
+          { id: "showcase", label: "Витрина", top: "68.4%", left: "85.4%" },
+        ],
+        correctSpot: "open_space",
+        modalCorrect:
+          "В открытом месте меньше риск попасть под падающие предметы.",
+        wrongMessages: {
+          banner: "Баннер может сорваться.",
+          mannequin: "Манекен может упасть.",
+          showcase: "Стекло может разбиться.",
+        },
+        correctPoints: 10,
+        wrongPoints: -5,
+      },
+      {
+        key: "evacuation",
+        title: "Раунд 3 — «Толпа и паника»",
+        image: "round3.png",
+        buttons: [
+          { id: "lift", label: "Лифт", top: "28.6%", left: "60.7%" },
+          { id: "escalator", label: "Эскалатор", top: "31.6%", left: "73.7%" },
+          { id: "staircase", label: "Лестница", top: "30.6%", left: "48.9%" },
+          {
+            id: "food_table",
+            label: "Фудкорт стол",
+            top: "84.2%",
+            left: "46.1%",
+          },
+        ],
+        correctSpot: "staircase",
+        modalCorrect:
+          "Лестницы — самый безопасный способ спуститься при эвакуации.",
+        wrongMessages: {
+          lift: "Лифты могут застрять.",
+          escalator: "Эскалатор может остановиться.",
+          food_table: "Стол не защищает от падающих предметов.",
+        },
+        correctPoints: 10,
+        wrongPoints: -5,
+      },
+      {
+        key: "responsibility",
+        title: "Раунд 4 — «Эвакуация»",
+        image: "round4.png",
+        buttons: [
+          {
+            id: "main_exit",
+            label: "Основной выход",
+            top: "52.6%",
+            left: "47.2%",
+          },
+          {
+            id: "emergency_exit",
+            label: "Аварийный выход",
+            top: "47.4%",
+            left: "83.1%",
+          },
+          { id: "lift", label: "Лифт", top: "44.7%", left: "11.2%" },
+          { id: "parking", label: "Парковка", top: "57.9%", left: "56.2%" },
+        ],
+        correctSpot: "emergency_exit",
+        modalCorrect: "Аварийные выходы предназначены для быстрой эвакуации.",
+        wrongMessages: {
+          lift: "Опасно при землетрясении.",
+          parking: "Не предназначена для эвакуации.",
+          main_exit: "Может быть перегружен людьми.",
+        },
+        correctPoints: 10,
+        wrongPoints: -5,
+      },
+    ],
+    [],
+  );
+
+  const miniGameCurrentRound = miniGameRounds[miniGameRound] || null;
+  const miniGameMapSrc = miniGameCurrentRound
+    ? ASSET_IMAGES[miniGameCurrentRound.image] || null
+    : null;
+  const miniAnsweredCount = miniGameSelections.filter(Boolean).length;
+  const miniPerfectRun =
+    miniAnsweredCount === miniGameRounds.length &&
+    miniGameSelections.every((item) => item?.is_safe);
+  const miniBonusScore = miniPerfectRun ? PERFECT_BONUS : 0;
+  const miniTotalScore = miniScore + miniBonusScore;
+
+  const totalScreens = 14;
+>>>>>>> 879b184 (feat: final version)
 
   const currentScreen = useMemo(() => {
     if (view === "landing") return 1;
@@ -82,13 +288,70 @@ function App() {
     if (view === "scenario-final") return 6;
     if (view === "stress-brief") return 7;
     if (view === "stress-run") return 8;
+<<<<<<< HEAD
     if (view === "quiz") return Math.min(9 + quizIndex, 13);
     if (view === "result") return 13;
+=======
+    if (view === "pre-quiz") return 9;
+    if (view === "quiz") return Math.min(10 + quizIndex, 14);
+    if (view === "result") return 14;
+>>>>>>> 879b184 (feat: final version)
     return 1;
   }, [view, scenarioPath.length, quizIndex]);
 
   const progressPercent = Math.round((currentScreen / totalScreens) * 100);
 
+<<<<<<< HEAD
+=======
+  useEffect(() => {
+    setScenarioImageLoaded(false);
+  }, [scenarioImageSrc, currentNode?.id]);
+
+  useEffect(() => {
+    setFinalImageLoaded(false);
+  }, [finalImageSrc, scenarioFinal?.id]);
+
+  useEffect(() => {
+    if (miniRoundTimeLeft === null) return;
+    if (miniGameLocked) return;
+    if (miniRoundTimeLeft <= 0) {
+      const currentRound = miniGameRounds[miniGameRound];
+      const timeoutPoints = currentRound?.wrongPoints ?? -5;
+      setMiniGameLocked(true);
+      setMiniGameSelections((previous) => {
+        const next = [...previous];
+        next[miniGameRound] = {
+          round: miniGameRound + 1,
+          key: currentRound?.key || "",
+          spot_id: null,
+          is_safe: false,
+        };
+        return next;
+      });
+      setMiniScore((s) => s + timeoutPoints);
+      setMiniCombo(0);
+      setMiniLastSafe(false);
+      setMiniEffect("wrong");
+      setMiniModal({
+        type: "wrong",
+        message: "Вы не успели выбрать безопасную зону. Будьте быстрее!",
+        points: timeoutPoints,
+      });
+      window.setTimeout(() => setMiniEffect(null), 650);
+      return;
+    }
+    if (miniRoundTimeLeft === 10) {
+      setMiniTimerShake(true);
+      window.setTimeout(() => setMiniTimerShake(false), 500);
+    }
+    const timerId = window.setTimeout(
+      () => setMiniRoundTimeLeft((t) => (t !== null ? t - 1 : null)),
+      1000,
+    );
+    return () => window.clearTimeout(timerId);
+  }, [miniRoundTimeLeft, miniGameLocked, miniGameRound, miniGameRounds]);
+
+>>>>>>> 879b184 (feat: final version)
   const landingBenefits = [
     "Модуль поможет понять риски и опасные зоны во время землетрясения.",
     "Вы научитесь правильным действиям в момент толчков.",
@@ -111,7 +374,10 @@ function App() {
     try {
       const payload = await fetchPrototypeConfig();
       setConfig(payload);
+<<<<<<< HEAD
       setStressTimeLeft(payload?.stress_case?.timer_seconds || 240);
+=======
+>>>>>>> 879b184 (feat: final version)
     } catch (requestError) {
       setError(requestError.message || "Не удалось загрузить модуль.");
     } finally {
@@ -136,8 +402,25 @@ function App() {
       setScenarioPath([]);
       setScenarioFinal(null);
       setStressStarted(false);
+<<<<<<< HEAD
       setStressTimeLeft(config?.stress_case?.timer_seconds || 240);
       setStressAnswers({});
+=======
+      setStressAnswers({});
+      setMiniGameRound(0);
+      setMiniGameSelections([]);
+      setMiniGameLocked(false);
+      setMiniGameFeedback("");
+      setMiniMapLoaded(false);
+      setMiniScore(0);
+      setMiniCombo(0);
+      setMiniBestCombo(0);
+      setMiniLastSafe(null);
+      setMiniRoundTimeLeft(null);
+      setMiniTimerShake(false);
+      setMiniModal(null);
+      setMiniEffect(null);
+>>>>>>> 879b184 (feat: final version)
       setQuizIndex(0);
       setQuizAnswers({});
       setResult(null);
@@ -154,7 +437,13 @@ function App() {
   }
 
   function chooseScenarioOption(option) {
+<<<<<<< HEAD
     if (!currentNode) return;
+=======
+    if (!currentNode || isScenarioTransitioning) return;
+
+    setIsScenarioTransitioning(true);
+>>>>>>> 879b184 (feat: final version)
 
     const nextPath = [
       ...scenarioPath,
@@ -164,6 +453,7 @@ function App() {
         option_label: option.label,
       },
     ];
+<<<<<<< HEAD
     setScenarioPath(nextPath);
 
     if (String(option.next || "").startsWith("final")) {
@@ -182,19 +472,66 @@ function App() {
     }
 
     setScenarioNodeId(option.next);
+=======
+
+    window.setTimeout(() => {
+      setScenarioPath(nextPath);
+
+      if (String(option.next || "").startsWith("final")) {
+        const targetFinal = finalMap[option.next] || null;
+        setScenarioFinal(targetFinal);
+        setView("scenario-final");
+
+        if (sessionId && targetFinal) {
+          void trackSessionEvent(sessionId, "scenario_finished", {
+            final_id: targetFinal.id,
+            risk_level: targetFinal.risk_level,
+          });
+        }
+
+        setIsScenarioTransitioning(false);
+        return;
+      }
+
+      setScenarioNodeId(option.next);
+      setIsScenarioTransitioning(false);
+    }, 280);
+>>>>>>> 879b184 (feat: final version)
   }
 
   function startStressCase() {
     setStressStarted(true);
+<<<<<<< HEAD
     setStressTimeLeft(config?.stress_case?.timer_seconds || 240);
 
     if (sessionId) {
       void trackSessionEvent(sessionId, "stress_case_started", {
         timer_seconds: config?.stress_case?.timer_seconds || 240,
+=======
+    setMiniGameRound(0);
+    setMiniGameSelections([]);
+    setMiniGameLocked(false);
+    setMiniGameFeedback("");
+    setStressAnswers({});
+    setMiniScore(0);
+    setMiniCombo(0);
+    setMiniBestCombo(0);
+    setMiniLastSafe(null);
+    setMiniRoundTimeLeft(30);
+    setMiniTimerShake(false);
+    setMiniModal(null);
+    setMiniEffect(null);
+    setMiniMapLoaded(false);
+
+    if (sessionId) {
+      void trackSessionEvent(sessionId, "stress_case_started", {
+        mode: "safe_spot_game",
+>>>>>>> 879b184 (feat: final version)
       });
     }
   }
 
+<<<<<<< HEAD
   function setStressAnswer(questionId, optionId) {
     setStressAnswers((previous) => ({
       ...previous,
@@ -218,16 +555,129 @@ function App() {
       setError(
         "Ответьте на все пункты стресс-кейса или дождитесь окончания таймера.",
       );
+=======
+  function mapRoundAnswer(roundKey, isSafe) {
+    const safeMap = {
+      priority: "atrium",
+      team_split: "balanced",
+      evacuation: "controlled",
+      responsibility: "take",
+    };
+
+    const unsafeMap = {
+      priority: "lift_first",
+      team_split: "all_lift",
+      evacuation: "full_panic",
+      responsibility: "delay",
+    };
+
+    return isSafe ? safeMap[roundKey] : unsafeMap[roundKey];
+  }
+
+  function chooseMiniGameSpot(spotId) {
+    if (!miniGameCurrentRound || miniGameLocked) return;
+
+    const isSafe = miniGameCurrentRound.correctSpot === spotId;
+    const roundKey = miniGameCurrentRound.key;
+    const points = isSafe
+      ? miniGameCurrentRound.correctPoints
+      : miniGameCurrentRound.wrongPoints;
+
+    setMiniGameSelections((previous) => {
+      const next = [...previous];
+      next[miniGameRound] = {
+        round: miniGameRound + 1,
+        key: roundKey,
+        spot_id: spotId,
+        is_safe: isSafe,
+      };
+      return next;
+    });
+
+    setStressAnswers((previous) => ({
+      ...previous,
+      [roundKey]: mapRoundAnswer(roundKey, isSafe),
+    }));
+
+    setMiniScore((previous) => previous + points);
+    setMiniCombo((previous) => {
+      const nextCombo = isSafe ? previous + 1 : 0;
+      setMiniBestCombo((best) => Math.max(best, nextCombo));
+      return nextCombo;
+    });
+    setMiniLastSafe(isSafe);
+    setMiniRoundTimeLeft(null);
+    setMiniGameLocked(true);
+
+    if (isSafe) {
+      setMiniEffect("correct");
+      setMiniModal({
+        type: "correct",
+        message: miniGameCurrentRound.modalCorrect,
+        points,
+      });
+    } else {
+      setMiniEffect("wrong");
+      setMiniModal({
+        type: "wrong",
+        message:
+          miniGameCurrentRound.wrongMessages[spotId] ||
+          "Это опасная зона во время толчков.",
+        points,
+      });
+      window.setTimeout(() => setMiniEffect(null), 650);
+    }
+  }
+
+  function nextMiniGameRound() {
+    if (!miniGameCurrentRound) return;
+
+    if (miniGameRound >= miniGameRounds.length - 1) {
+      setMiniGameLocked(false);
+      setMiniRoundTimeLeft(null);
+      setMiniModal(null);
+      setMiniEffect(null);
+      continueToQuiz();
+      return;
+    }
+
+    setMiniGameRound((previous) => previous + 1);
+    setMiniGameLocked(false);
+    setMiniRoundTimeLeft(30);
+    setMiniTimerShake(false);
+    setMiniModal(null);
+    setMiniEffect(null);
+    setMiniMapLoaded(false);
+  }
+
+  function continueToQuiz() {
+    const answeredAllRounds = miniAnsweredCount === miniGameRounds.length;
+
+    if (!answeredAllRounds) {
+      setError("Пройдите все раунды мини-игры перед тестом.");
+>>>>>>> 879b184 (feat: final version)
       return;
     }
 
     setError("");
+<<<<<<< HEAD
     setView("quiz");
+=======
+    setView("pre-quiz");
+>>>>>>> 879b184 (feat: final version)
 
     if (sessionId) {
       void trackSessionEvent(sessionId, "stress_case_submitted", {
         answers_count: Object.keys(stressAnswers).length,
+<<<<<<< HEAD
         timer_left: stressTimeLeft,
+=======
+        safe_choices: miniGameSelections.filter((item) => item?.is_safe).length,
+        score: miniScore,
+        bonus_score: miniBonusScore,
+        total_score: miniTotalScore,
+        best_combo: miniBestCombo,
+>>>>>>> 879b184 (feat: final version)
       });
     }
   }
@@ -303,8 +753,25 @@ function App() {
     setScenarioPath([]);
     setScenarioFinal(null);
     setStressStarted(false);
+<<<<<<< HEAD
     setStressTimeLeft(config?.stress_case?.timer_seconds || 240);
     setStressAnswers({});
+=======
+    setStressAnswers({});
+    setMiniGameRound(0);
+    setMiniGameSelections([]);
+    setMiniGameLocked(false);
+    setMiniGameFeedback("");
+    setMiniMapLoaded(false);
+    setMiniScore(0);
+    setMiniCombo(0);
+    setMiniBestCombo(0);
+    setMiniLastSafe(null);
+    setMiniRoundTimeLeft(null);
+    setMiniTimerShake(false);
+    setMiniModal(null);
+    setMiniEffect(null);
+>>>>>>> 879b184 (feat: final version)
     setQuizIndex(0);
     setQuizAnswers({});
     setResult(null);
@@ -325,9 +792,12 @@ function App() {
               style={{ width: `${progressPercent}%` }}
             />
           </div>
+<<<<<<< HEAD
           <small>
             Экран {currentScreen}/{totalScreens}
           </small>
+=======
+>>>>>>> 879b184 (feat: final version)
         </header>
 
         {error && <p className="error">{error}</p>}
@@ -376,6 +846,7 @@ function App() {
 
             <section className="cta-strip">
               <div>
+<<<<<<< HEAD
                 <h3>Начать обучение сейчас</h3>
                 <p>
                   Модуль займёт всего 5–10 минут, но знания останутся на всю
@@ -394,6 +865,30 @@ function App() {
                 Ознакомительный экран
               </button>
             </div>
+=======
+                <h3>Введите имя и начните обучение</h3>
+                <p>
+                  Модуль займёт всего 5–10 минут. Имя будет отображено в
+                  результате.
+                </p>
+              </div>
+              <div className="cta-controls">
+                <input
+                  className="input"
+                  value={userName}
+                  onChange={(event) => setUserName(event.target.value)}
+                  placeholder="Введите имя сотрудника"
+                />
+                <button
+                  className="primary"
+                  onClick={beginModule}
+                  disabled={loading}
+                >
+                  {loading ? "Запуск..." : "Начать модуль"}
+                </button>
+              </div>
+            </section>
+>>>>>>> 879b184 (feat: final version)
           </section>
         )}
 
@@ -402,8 +897,13 @@ function App() {
             <h2>Запуск модуля: «Торговый центр. Землетрясение»</h2>
             <p>
               Это практический интерактивный модуль для сотрудников ТРЦ. На
+<<<<<<< HEAD
               следующем шаге начнётся сценарий с ветвлением, далее — стресс-кейс
               и тест.
+=======
+              следующем шаге начнётся сценарий с ветвлением, далее — мини-игра
+              «Найди безопасное место» и тест.
+>>>>>>> 879b184 (feat: final version)
             </p>
 
             <div className="highlights-grid">
@@ -453,6 +953,22 @@ function App() {
 
         {view === "scenario" && currentNode && (
           <section className="panel smooth scenario">
+<<<<<<< HEAD
+=======
+            <div className="scenario-visual medium">
+              {!scenarioImageLoaded && <div className="image-skeleton" />}
+              {scenarioImageSrc ? (
+                <img
+                  src={scenarioImageSrc}
+                  alt={`Иллюстрация: ${currentNode.title}`}
+                  className={`scenario-image ${scenarioImageLoaded ? "loaded" : ""}`}
+                  onLoad={() => setScenarioImageLoaded(true)}
+                />
+              ) : (
+                <div className="image-fallback">Иллюстрация загружается</div>
+              )}
+            </div>
+>>>>>>> 879b184 (feat: final version)
             <h2>{currentNode.title}</h2>
             <p>{currentNode.text}</p>
             <div className="option-list">
@@ -460,17 +976,46 @@ function App() {
                 <button
                   key={option.id}
                   className="option"
+<<<<<<< HEAD
+=======
+                  disabled={isScenarioTransitioning}
+>>>>>>> 879b184 (feat: final version)
                   onClick={() => chooseScenarioOption(option)}
                 >
                   <strong>{option.id}</strong> — {option.label}
                 </button>
               ))}
             </div>
+<<<<<<< HEAD
+=======
+            {isScenarioTransitioning && (
+              <div className="next-step-skeleton" aria-hidden="true">
+                <div className="next-line" />
+                <div className="next-line short" />
+              </div>
+            )}
+>>>>>>> 879b184 (feat: final version)
           </section>
         )}
 
         {view === "scenario-final" && scenarioFinal && (
           <section className="panel smooth result">
+<<<<<<< HEAD
+=======
+            <div className="scenario-visual medium">
+              {!finalImageLoaded && <div className="image-skeleton" />}
+              {finalImageSrc ? (
+                <img
+                  src={finalImageSrc}
+                  alt={`Финал: ${scenarioFinal.label}`}
+                  className={`scenario-image ${finalImageLoaded ? "loaded" : ""}`}
+                  onLoad={() => setFinalImageLoaded(true)}
+                />
+              ) : (
+                <div className="image-fallback">Иллюстрация финала</div>
+              )}
+            </div>
+>>>>>>> 879b184 (feat: final version)
             <h2>{scenarioFinal.label}</h2>
             <p>{scenarioFinal.outcome}</p>
             <p>
@@ -479,7 +1024,14 @@ function App() {
             <div className="row nav">
               <button
                 className="primary"
+<<<<<<< HEAD
                 onClick={() => setView("stress-brief")}
+=======
+                onClick={() => {
+                  startStressCase();
+                  setView("stress-run");
+                }}
+>>>>>>> 879b184 (feat: final version)
               >
                 Перейти к стресс-кейсу
               </button>
@@ -489,11 +1041,25 @@ function App() {
 
         {view === "stress-brief" && (
           <section className="panel smooth micro">
+<<<<<<< HEAD
             <h2>{config?.stress_case?.title}</h2>
             <ul className="resource-list">
               {(config?.stress_case?.context || []).map((line) => (
                 <li key={line}>{line}</li>
               ))}
+=======
+            <h2>Мини-игра: «Найди безопасное место»</h2>
+            <p>
+              На карте ТЦ будут анимации опасностей: падающие витрины,
+              трясущиеся люстры и мигающие стрелки. В каждом раунде выберите
+              безопасную точку.
+            </p>
+            <ul className="resource-list">
+              <li>✔ колонна</li>
+              <li>✔ открытое пространство</li>
+              <li>❌ стеклянная витрина</li>
+              <li>❌ эскалатор</li>
+>>>>>>> 879b184 (feat: final version)
             </ul>
             <div className="row nav">
               <button className="primary" onClick={() => setView("scenario")}>
@@ -508,6 +1074,7 @@ function App() {
 
         {view === "stress-run" && (
           <section className="panel smooth scenario">
+<<<<<<< HEAD
             <h2>Стресс-кейс: решение за 4 минуты</h2>
             {!stressStarted ? (
               <div>
@@ -548,10 +1115,211 @@ function App() {
                   </button>
                 </div>
               </>
+=======
+            <h2>Стресс-кейс: «Найди безопасное место»</h2>
+            {!stressStarted ? (
+              <div>
+                <p>
+                  Серия раундов. В каждом нужно нажать на безопасную точку. На
+                  выбор <strong>30 секунд</strong>.
+                </p>
+                <div className="row nav">
+                  <button className="primary" onClick={startStressCase}>
+                    Начать
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div
+                className={`map-game-panel${
+                  miniEffect === "wrong" ? " panel-shake" : ""
+                }${miniEffect === "correct" ? " panel-glow" : ""}`}
+              >
+                {/* Red flash overlay */}
+                {miniEffect === "wrong" && <div className="panel-red-flash" />}
+
+                {/* Header */}
+                <div className="map-overlay-top">
+                  <div className="map-round-header">
+                    <div className="map-round-title">
+                      <span className="map-round-number">
+                        {miniGameRound + 1} / {miniGameRounds.length}
+                      </span>
+                      <h3 className="map-round-name">
+                        {miniGameCurrentRound?.title}
+                      </h3>
+                    </div>
+                    {miniRoundTimeLeft !== null && (
+                      <span
+                        className={`hud-chip map-timer${
+                          miniRoundTimeLeft <= 10 ? " danger" : ""
+                        }${miniTimerShake ? " timer-shake" : ""}`}
+                      >
+                        ⏱ {miniRoundTimeLeft}с
+                      </span>
+                    )}
+                  </div>
+                  <div className="mini-hud">
+                    <span className="hud-chip">Очки: {miniScore}</span>
+                    <span className="hud-chip">Комбо: x{miniCombo}</span>
+                    <span className="hud-chip">
+                      Лучшее комбо: x{miniBestCombo}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Round image */}
+                <div
+                  className={`map-wrapper${
+                    miniEffect === "correct" ? " map-correct-glow" : ""
+                  }`}
+                >
+                  {!miniMapLoaded && (
+                    <div className="image-skeleton map-skeleton" />
+                  )}
+                  {miniGameMapSrc ? (
+                    <img
+                      src={miniGameMapSrc}
+                      alt={miniGameCurrentRound?.title}
+                      className={`map-image ${miniMapLoaded ? "loaded" : ""}`}
+                      onLoad={() => setMiniMapLoaded(true)}
+                    />
+                  ) : (
+                    <div className="image-fallback map-fallback">
+                      {miniGameCurrentRound?.title}
+                    </div>
+                  )}
+
+                  {/* Buttons overlaid on image */}
+                  {(miniGameCurrentRound?.buttons || []).map((btn) => {
+                    const sel = miniGameSelections[miniGameRound];
+                    const isSelected = sel?.spot_id === btn.id;
+                    const isCorrect =
+                      btn.id === miniGameCurrentRound.correctSpot;
+                    let cls = "round-choice-btn";
+                    if (miniGameLocked && isSelected) {
+                      cls += isCorrect ? " correct" : " wrong";
+                    } else if (miniGameLocked && isCorrect) {
+                      cls += " correct-hint";
+                    }
+                    return (
+                      <button
+                        key={btn.id}
+                        className={cls}
+                        style={{ top: btn.top, left: btn.left }}
+                        onClick={() => chooseMiniGameSpot(btn.id)}
+                        disabled={miniGameLocked}
+                      >
+                        {btn.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Next round button — always rendered to keep stable height */}
+                <div className="map-controls">
+                  <div className="row nav">
+                    {miniGameLocked && !miniModal && (
+                      <button className="primary" onClick={nextMiniGameRound}>
+                        {miniGameRound === miniGameRounds.length - 1
+                          ? "Завершить стресс-кейс"
+                          : "Следующий раунд"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Modal overlay */}
+                {miniModal && (
+                  <div className="round-modal-overlay">
+                    <div className={`round-modal ${miniModal.type}`}>
+                      <div className="round-modal-icon">
+                        {miniModal.type === "correct" ? "✅" : "❌"}
+                      </div>
+                      <div className={`round-modal-points ${miniModal.type}`}>
+                        {miniModal.points > 0
+                          ? `+${miniModal.points}`
+                          : miniModal.points}
+                        {" очков"}
+                      </div>
+                      <p className="round-modal-message">{miniModal.message}</p>
+                      <button
+                        className="primary"
+                        onClick={() => {
+                          setMiniModal(null);
+                          setMiniEffect(null);
+                          if (miniModal.type === "correct") {
+                            nextMiniGameRound();
+                          }
+                        }}
+                      >
+                        {miniModal.type === "correct"
+                          ? miniGameRound === miniGameRounds.length - 1
+                            ? "Завершить"
+                            : "Понял, продолжить"
+                          : "Понял"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+>>>>>>> 879b184 (feat: final version)
             )}
           </section>
         )}
 
+<<<<<<< HEAD
+=======
+        {view === "pre-quiz" && (
+          <section className="panel smooth">
+            <h2>Стресс-кейс завершён</h2>
+            <p>Вы прошли все раунды. Вот ваш результат:</p>
+
+            <div className="stress-result-block">
+              <div className="stress-score-display">
+                <span className="stress-score-number">{miniScore}</span>
+                <span className="stress-score-label">очков из 40</span>
+              </div>
+              <div
+                className={`stress-rating ${
+                  miniScore >= 35
+                    ? "rating-great"
+                    : miniScore >= 20
+                      ? "rating-good"
+                      : "rating-retry"
+                }`}
+              >
+                {miniScore >= 35
+                  ? "⭐⭐⭐ Отличная реакция!"
+                  : miniScore >= 20
+                    ? "⭐⭐ Хорошо"
+                    : "⭐ Попробуйте ещё раз"}
+              </div>
+              <div className="stress-score-bar-track">
+                <div
+                  className="stress-score-bar-fill"
+                  style={{
+                    width: `${Math.max(0, Math.min(100, (miniScore / 40) * 100))}%`,
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="row nav">
+              <button
+                className="secondary"
+                onClick={() => setView("stress-run")}
+              >
+                Назад
+              </button>
+              <button className="primary" onClick={() => setView("quiz")}>
+                Перейти к тесту
+              </button>
+            </div>
+          </section>
+        )}
+
+>>>>>>> 879b184 (feat: final version)
         {view === "quiz" && currentQuizQuestion && (
           <section className="panel smooth scenario">
             <h2>{config?.quiz?.title}</h2>
