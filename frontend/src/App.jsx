@@ -112,7 +112,7 @@ function App() {
     () => [
       {
         key: "priority",
-        title: "Раунд 1 — «Первые толчки»",
+        title: "Раунд 1 — Куда встать при первых толчках?",
         image: "round1.png",
         buttons: [
           { id: "chandelier", label: "Люстра", top: "28.9%", left: "51.7%" },
@@ -138,7 +138,7 @@ function App() {
       },
       {
         key: "team_split",
-        title: "Раунд 2 — «Падают предметы»",
+        title: "Раунд 2 — Куда отойти, когда падают предметы?",
         image: "round2.png",
         buttons: [
           {
@@ -169,7 +169,7 @@ function App() {
       },
       {
         key: "evacuation",
-        title: "Раунд 3 — «Толпа и паника»",
+        title: "Раунд 3 — Как выбраться, когда вокруг толпа и паника?",
         image: "round3.png",
         buttons: [
           { id: "lift", label: "Лифт", top: "28.6%", left: "60.7%" },
@@ -195,7 +195,7 @@ function App() {
       },
       {
         key: "responsibility",
-        title: "Раунд 4 — «Эвакуация»",
+        title: "Раунд 4 — Какой выход использовать при эвакуации?",
         image: "round4.png",
         buttons: [
           {
@@ -653,7 +653,7 @@ function App() {
       <section className="container premium-surface fade-in">
         <header className="header">
           <h1>
-            {config?.title || "Проверь себя: готов ли ты к землетрясению?"}
+            {config?.title || "Действуй правильно: готовность сотрудников ТЦ к землетрясению"}
           </h1>
           <p className="subtitle">Целевая аудитория: сотрудники ТРЦ</p>
           <div className="progress-track">
@@ -671,7 +671,7 @@ function App() {
             <div className="landing-hero">
               <div className="landing-copy">
                 <h2>
-                  Готов ли ты к землетрясению? Узнай и подготовься заранее.
+                  Узнай и подготовься заранее.
                 </h2>
                 <p>
                   Интерактивный обучающий модуль поможет понять реальные угрозы,
