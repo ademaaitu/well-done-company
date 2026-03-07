@@ -1,129 +1,194 @@
-# Earthquake Safety Test (Laravel + React)
+# 🏢 Earthquake Safety — Обучающий модуль для сотрудников ТРЦ
 
-Interactive training platform for earthquake preparedness with branching scenarios, personalized recommendations, and stored user progress.
+Интерактивный тренажёр по действиям при землетрясении. Сотрудник проходит разветвлённый сценарий, стресс-кейс с мини-игрой и тест — на выходе получает персональную оценку готовности и чек-лист.
 
-## Project structure
+---
 
-- `backend` — Laravel API
-- `frontend` — React 18 + Vite SPA
-- `docker` — Nginx config
-- `openapi.yaml` — OpenAPI 3.0 API specification
+## 📦 Стек технологий
 
-## Features delivered
+| Слой             | Технологии                   |
+| ---------------- | ---------------------------- |
+| Backend          | PHP 8.2, Laravel 11, MySQL 8 |
+| Frontend         | React 18, Vite 5             |
+| Инфраструктура   | Docker, Nginx                |
+| API-документация | OpenAPI 3.0 (Swagger UI)     |
 
-### Backend (Laravel)
+---
 
-- Models:
-  - `Module (id, name, description)`
-  - `Scenario (id, module_id, branching_id, stress_context, question, options, correct_answer, wrong_explanation, branching_logic)`
-  - `UserAnswer (id, user_name, scenario_id, selected_option, score, response_time_ms, retries, stress_context)`
-  - `Result (id, user_name, module_id, total_score, accuracy_score, reaction_risk_index, stress_response_score, overall_preparedness_percent, risk_category, recommendation)`
-- API endpoints:
-  - `POST /api/session/start`
-  - `POST /api/session/events`
-  - `GET /api/resources`
-  - `GET /api/modules`
-  - `GET /api/modules/{id}/scenarios`
-  - `GET /api/modules/{id}/scenarios/next`
-  - `POST /api/modules/{id}/submit`
-  - `GET /api/results/{user_name}`
-  - `GET /api/admin/analytics-summary`
-  - `GET /api/admin/risk-distribution`
-  - `GET /api/prototype/config`
-  - `POST /api/prototype/submit`
-  - `GET /api/prototype/analytics`
-- Branching logic and hints based on selected options
-- Wrong-answer micro-learning explanation flow
-- Dynamic scenario routing for stress contexts (`bus`, `mall`, `office`)
-- Recommendation levels: `Требуется улучшение`, `Хорошо`, `Отлично`
-- User progress and full session JSON persisted in DB (`results.progress`, `results.session_json`, `user_answers`)
-- CORS configured for frontend dev URL `http://localhost:5173`
-- Bearer token middleware for protected endpoints (`submit`, `results`)
+## 🗂 Структура проекта
 
-### Frontend (React 18 + Vite)
+```
+.
+├── backend/          # Laravel API
+├── frontend/         # React SPA (Vite)
+├── docker/           # Nginx конфиг
+├── docs/             # Архитектура, дорожная карта кампании
+├── openapi.yaml      # OpenAPI спецификация
+└── docker-compose.yml
+```
 
-SPA with 12 interactive screens:
+---
 
-1. Welcome + user name
-2. Module selection (home / mall / transport)
-3. Scenario 1
-4. Stress case
-5. Scenario 2
-6. Scenario 3
-7. Adaptive hints (branching)
-8. Final check
-9. Final result
-10. Checklist + resources
-11. Restart / back to modules
-12. Share / QR + user history
+## 🚀 Быстрый старт
 
-Additional UX:
+### Требования
 
-- Animated progress bar and smooth screen transitions
-- Previous / Next / Submit navigation
-- Correct / incorrect answer animations
-- Stress-screen shake animation
-- Color-coded risk result (`Low` / `Moderate` / `High`)
-- Mobile-first responsive layout
-- Swipe cards for checklist
-- API error handling and personalized output
+- Docker + Docker Compose
 
-### Docker services
-
-- `app` (PHP + Laravel)
-- `nginx` (host `http://localhost:8000`)
-- `mysql` (8.0 with volume)
-- `frontend` (`http://localhost:5173`)
-- `swagger-ui` (`http://localhost:8081`)
-
-## Environment files
-
-- Backend: `backend/.env`, `backend/.env.example`
-  - `DB_CONNECTION=mysql`
-  - `DB_HOST=mysql`
-  - `DB_DATABASE=earthquake`
-  - `DB_USERNAME=root`
-  - `DB_PASSWORD=root`
-  - `API_BEARER_TOKEN=dev-earthquake-token`
-
-- Frontend: `frontend/.env`, `frontend/.env.example`
-  - `VITE_API_BASE_URL=http://localhost:8000`
-  - `VITE_API_TOKEN=dev-earthquake-token`
-
-## Local run
+### Запуск
 
 ```bash
+# 1. Клонировать и перейти в папку
+git clone <repo-url> && cd welldone-company
+
+# 2. Поднять все контейнеры
 docker compose up -d --build
+
+# 3. Применить миграции и загрузить данные
 docker compose exec app php artisan migrate:fresh --seed --force
 ```
 
-Open:
+### Готово — открыть в браузере
 
-- Backend API: `http://localhost:8000/api/modules`
-- Frontend: `http://localhost:5173`
-- Swagger UI: `http://localhost:8081`
+| Сервис              | URL                       |
+| ------------------- | ------------------------- |
+| 🎓 Обучающий модуль | http://localhost:5173     |
+| ⚙️ API              | http://localhost:8000/api |
+| 📖 Swagger UI       | http://localhost:8081     |
 
-## OpenAPI
+---
 
-- Spec file: `openapi.yaml`
-- Includes all endpoints, schemas, examples, tags, and bearer auth.
+## 🔑 Переменные окружения
 
-## Campaign concept package
+### `backend/.env`
 
-- Full strategic + content + fast-launch document: [docs/campaign-roadmap.md](docs/campaign-roadmap.md)
-- TRC prototype UX/backend architecture: [docs/prototype-trc-architecture.md](docs/prototype-trc-architecture.md)
+```env
+DB_CONNECTION=mysql
+DB_HOST=mysql          # внутри Docker-сети
+DB_PORT=3306
+DB_DATABASE=earthquake
+DB_USERNAME=root
+DB_PASSWORD=root
 
-## MVP plan
+API_BEARER_TOKEN=dev-earthquake-token
+```
 
-### 7 days
+> ⚠️ При запуске `php artisan` **локально** (вне контейнера) используй `DB_HOST=127.0.0.1` и `DB_PORT=33060`.
 
-- Core interactive test with branching answers
-- Checklist screen
-- Promo poster/landing QR link to module
+### `frontend/.env`
 
-### 30 days
+```env
+VITE_API_BASE_URL=http://localhost:8000
+VITE_API_TOKEN=dev-earthquake-token
+```
 
-- Full multi-module training content
-- Short video explainers per scenario
-- Social publishing pack (clips/cards)
-- Analytics dashboard (completion, score bands, weak points)
+---
+
+## 🌐 API — основные эндпоинты
+
+### Прототип (текущий модуль)
+
+| Метод  | Эндпоинт                   | Описание                                        |
+| ------ | -------------------------- | ----------------------------------------------- |
+| `GET`  | `/api/prototype/config`    | Конфиг модуля: сценарий, стресс-кейс, квиз      |
+| `POST` | `/api/prototype/submit`    | Отправить результат, получить оценку и чек-лист |
+| `GET`  | `/api/prototype/analytics` | Агрегированная статистика прохождений           |
+
+### Сессии
+
+| Метод  | Эндпоинт              | Описание                          |
+| ------ | --------------------- | --------------------------------- |
+| `POST` | `/api/session/start`  | Создать сессию                    |
+| `POST` | `/api/session/events` | Записать событие (шаги, действия) |
+
+> Защищённые эндпоинты требуют заголовок `Authorization: Bearer dev-earthquake-token`
+
+Полная спецификация — в файле [`openapi.yaml`](openapi.yaml).
+
+---
+
+## 🎮 Структура модуля
+
+```
+Лэндинг (ввод имени)
+   └── Сценарий с ветвлением (7 узлов → 8 финалов)
+          └── Стресс-кейс: мини-игра «Найди безопасное место»
+                 ├── Раунд 1 — Куда встать при первых толчках?
+                 ├── Раунд 2 — Куда отойти, когда падают предметы?
+                 ├── Раунд 3 — Как выбраться при толпе и панике?
+                 └── Раунд 4 — Какой выход использовать при эвакуации?
+                        └── Итог стресс-кейса (очки, комбо, рейтинг)
+                               └── Тест (5 вопросов)
+                                      └── Персональный результат + чек-лист
+```
+
+---
+
+## 📊 Персональная оценка
+
+Итоговая готовность рассчитывается как:
+
+```
+Общая готовность = Сценарий × 35% + Стресс-кейс × 35% + Тест × 30%
+```
+
+| Результат | Категория риска |
+| --------- | --------------- |
+| ≥ 80%     | 🟢 Низкий       |
+| 55–79%    | 🟡 Умеренный    |
+| < 55%     | 🔴 Высокий      |
+
+**Персональный чек-лист** формируется динамически — только по тем вопросам, где допущена ошибка.
+
+---
+
+## 🐳 Docker-сервисы
+
+| Контейнер               | Роль                      | Порт                |
+| ----------------------- | ------------------------- | ------------------- |
+| `earthquake-app`        | PHP-FPM (Laravel)         | —                   |
+| `earthquake-nginx`      | Nginx (проксирует на app) | `8000`              |
+| `earthquake-mysql`      | MySQL 8.0                 | `33060` (локальный) |
+| `earthquake-frontend`   | Vite dev-сервер           | `5173`              |
+| `earthquake-swagger-ui` | Swagger UI                | `8081`              |
+
+---
+
+## 🗃 База данных — ключевые таблицы
+
+| Таблица             | Назначение                                |
+| ------------------- | ----------------------------------------- |
+| `learning_sessions` | Сессии пользователей                      |
+| `session_events`    | События внутри сессии (шаги, ответы)      |
+| `results`           | Итоги прохождения с оценками и чек-листом |
+| `user_answers`      | Ответы пользователя по каждому вопросу    |
+| `modules`           | Обучающие модули                          |
+| `scenarios`         | Сценарии с ветвлящейся логикой            |
+
+---
+
+## 📁 Документация
+
+- [`docs/prototype-trc-architecture.md`](docs/prototype-trc-architecture.md) — архитектура прототипа ТРЦ
+- [`docs/campaign-roadmap.md`](docs/campaign-roadmap.md) — стратегия запуска кампании
+
+---
+
+## 🛠 Полезные команды
+
+```bash
+# Логи всех сервисов
+docker compose logs -f
+
+# Логи только фронтенда
+docker compose logs -f frontend
+
+# Войти в контейнер с Laravel
+docker compose exec app bash
+
+# Запустить миграции вручную (локально)
+php artisan migrate   # DB_HOST=127.0.0.1, DB_PORT=33060
+
+# Запустить миграции внутри контейнера
+docker compose exec app php artisan migrate
+```
