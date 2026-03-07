@@ -32,12 +32,9 @@ body {
   margin: 0 auto;
   border-radius: 20px;
   padding: 18px;
-<<<<<<< HEAD
-=======
   display: flex;
   flex-direction: column;
   min-height: 900px;
->>>>>>> 879b184 (feat: final version)
 }
 
 .premium-surface {
@@ -84,12 +81,9 @@ body {
   background: #ffffff;
   padding: 16px;
   box-shadow: 0 8px 18px rgba(36, 60, 100, 0.06);
-<<<<<<< HEAD
-=======
   display: flex;
   flex-direction: column;
   flex: 1;
->>>>>>> 879b184 (feat: final version)
 }
 
 .landing {
@@ -210,8 +204,6 @@ body {
   background: #f9fbff;
 }
 
-<<<<<<< HEAD
-=======
 .scenario-visual {
   width: min(100%, 760px);
   margin: 0 auto 14px;
@@ -519,7 +511,6 @@ body {
   color: #7eeaa8;
 }
 
->>>>>>> 879b184 (feat: final version)
 .input {
   width: 100%;
   margin-top: 8px;
@@ -606,14 +597,11 @@ body {
   margin-top: 15px;
 }
 
-<<<<<<< HEAD
-=======
 .panel .row.nav {
   margin-top: auto;
   padding-top: 20px;
 }
 
->>>>>>> 879b184 (feat: final version)
 .primary {
   border: none;
   background: linear-gradient(90deg, #2f6df6, #3f86f8);
@@ -720,8 +708,6 @@ button:disabled {
   animation: stressShake 420ms ease;
 }
 
-<<<<<<< HEAD
-=======
 @keyframes timerShake {
   0% {
     transform: scale(1);
@@ -743,7 +729,6 @@ button:disabled {
   }
 }
 
->>>>>>> 879b184 (feat: final version)
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -785,8 +770,6 @@ button:disabled {
   }
 }
 
-<<<<<<< HEAD
-=======
 @keyframes skeletonMove {
   from {
     background-position: 100% 0;
@@ -850,7 +833,6 @@ button:disabled {
   }
 }
 
->>>>>>> 879b184 (feat: final version)
 @media (min-width: 768px) {
   .layout {
     padding: 28px;
@@ -879,8 +861,6 @@ button:disabled {
     align-items: end;
     gap: 14px;
   }
-<<<<<<< HEAD
-=======
 
   .scenario-image,
   .image-fallback {
@@ -1241,5 +1221,4 @@ button:disabled {
   width: 100%;
   padding: 12px;
   font-size: 0.95rem;
->>>>>>> 879b184 (feat: final version)
 }

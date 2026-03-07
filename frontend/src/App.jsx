@@ -6,8 +6,6 @@ import {
   trackSessionEvent,
 } from "./api";
 
-<<<<<<< HEAD
-=======
 const ASSET_IMAGES = Object.fromEntries(
   Object.entries(
     import.meta.glob("./assets/*.{png,jpg,jpeg,webp,svg}", {
@@ -45,7 +43,6 @@ function finalImageForId(finalId) {
   return null;
 }
 
->>>>>>> 879b184 (feat: final version)
 function localFallbackSessionId() {
   if (window.crypto?.randomUUID) {
     return window.crypto.randomUUID();
@@ -55,10 +52,7 @@ function localFallbackSessionId() {
 }
 
 function App() {
-<<<<<<< HEAD
-=======
   const PERFECT_BONUS = 15;
->>>>>>> 879b184 (feat: final version)
   const [view, setView] = useState("landing");
   const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -72,10 +66,6 @@ function App() {
   const [scenarioFinal, setScenarioFinal] = useState(null);
 
   const [stressStarted, setStressStarted] = useState(false);
-<<<<<<< HEAD
-  const [stressTimeLeft, setStressTimeLeft] = useState(240);
-  const [stressAnswers, setStressAnswers] = useState({});
-=======
   const [stressAnswers, setStressAnswers] = useState({});
   const [miniGameRound, setMiniGameRound] = useState(0);
   const [miniGameSelections, setMiniGameSelections] = useState([]);
@@ -90,45 +80,19 @@ function App() {
   const [miniTimerShake, setMiniTimerShake] = useState(false);
   const [miniModal, setMiniModal] = useState(null);
   const [miniEffect, setMiniEffect] = useState(null);
->>>>>>> 879b184 (feat: final version)
 
   const [quizIndex, setQuizIndex] = useState(0);
   const [quizAnswers, setQuizAnswers] = useState({});
 
   const [result, setResult] = useState(null);
-<<<<<<< HEAD
-=======
   const [isScenarioTransitioning, setIsScenarioTransitioning] = useState(false);
   const [scenarioImageLoaded, setScenarioImageLoaded] = useState(false);
   const [finalImageLoaded, setFinalImageLoaded] = useState(false);
->>>>>>> 879b184 (feat: final version)
 
   useEffect(() => {
     void loadConfig();
   }, []);
 
-<<<<<<< HEAD
-  useEffect(() => {
-    if (view !== "stress-run" || !stressStarted || stressTimeLeft <= 0) {
-      return;
-    }
-
-    const timer = setInterval(() => {
-      setStressTimeLeft((previous) => {
-        if (previous <= 1) {
-          clearInterval(timer);
-          return 0;
-        }
-
-        return previous - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [view, stressStarted, stressTimeLeft]);
-
-=======
->>>>>>> 879b184 (feat: final version)
   const nodeMap = useMemo(() => {
     const nodes = config?.scenario?.nodes || [];
     return Object.fromEntries(nodes.map((node) => [node.id, node]));
@@ -142,10 +106,6 @@ function App() {
   const currentNode = nodeMap[scenarioNodeId] || null;
   const quizQuestions = config?.quiz?.questions || [];
   const currentQuizQuestion = quizQuestions[quizIndex] || null;
-<<<<<<< HEAD
-
-  const totalScreens = 13;
-=======
   const scenarioImageSrc = scenarioImageForNode(currentNode?.id);
   const finalImageSrc = finalImageForId(scenarioFinal?.id);
   const miniGameRounds = useMemo(
@@ -279,7 +239,6 @@ function App() {
   const miniTotalScore = miniScore + miniBonusScore;
 
   const totalScreens = 14;
->>>>>>> 879b184 (feat: final version)
 
   const currentScreen = useMemo(() => {
     if (view === "landing") return 1;
@@ -288,21 +247,14 @@ function App() {
     if (view === "scenario-final") return 6;
     if (view === "stress-brief") return 7;
     if (view === "stress-run") return 8;
-<<<<<<< HEAD
-    if (view === "quiz") return Math.min(9 + quizIndex, 13);
-    if (view === "result") return 13;
-=======
     if (view === "pre-quiz") return 9;
     if (view === "quiz") return Math.min(10 + quizIndex, 14);
     if (view === "result") return 14;
->>>>>>> 879b184 (feat: final version)
     return 1;
   }, [view, scenarioPath.length, quizIndex]);
 
   const progressPercent = Math.round((currentScreen / totalScreens) * 100);
 
-<<<<<<< HEAD
-=======
   useEffect(() => {
     setScenarioImageLoaded(false);
   }, [scenarioImageSrc, currentNode?.id]);
@@ -351,7 +303,6 @@ function App() {
     return () => window.clearTimeout(timerId);
   }, [miniRoundTimeLeft, miniGameLocked, miniGameRound, miniGameRounds]);
 
->>>>>>> 879b184 (feat: final version)
   const landingBenefits = [
     "Модуль поможет понять риски и опасные зоны во время землетрясения.",
     "Вы научитесь правильным действиям в момент толчков.",
@@ -374,10 +325,6 @@ function App() {
     try {
       const payload = await fetchPrototypeConfig();
       setConfig(payload);
-<<<<<<< HEAD
-      setStressTimeLeft(payload?.stress_case?.timer_seconds || 240);
-=======
->>>>>>> 879b184 (feat: final version)
     } catch (requestError) {
       setError(requestError.message || "Не удалось загрузить модуль.");
     } finally {
@@ -402,10 +349,6 @@ function App() {
       setScenarioPath([]);
       setScenarioFinal(null);
       setStressStarted(false);
-<<<<<<< HEAD
-      setStressTimeLeft(config?.stress_case?.timer_seconds || 240);
-      setStressAnswers({});
-=======
       setStressAnswers({});
       setMiniGameRound(0);
       setMiniGameSelections([]);
@@ -420,7 +363,6 @@ function App() {
       setMiniTimerShake(false);
       setMiniModal(null);
       setMiniEffect(null);
->>>>>>> 879b184 (feat: final version)
       setQuizIndex(0);
       setQuizAnswers({});
       setResult(null);
@@ -437,13 +379,9 @@ function App() {
   }
 
   function chooseScenarioOption(option) {
-<<<<<<< HEAD
-    if (!currentNode) return;
-=======
     if (!currentNode || isScenarioTransitioning) return;
 
     setIsScenarioTransitioning(true);
->>>>>>> 879b184 (feat: final version)
 
     const nextPath = [
       ...scenarioPath,
@@ -453,26 +391,6 @@ function App() {
         option_label: option.label,
       },
     ];
-<<<<<<< HEAD
-    setScenarioPath(nextPath);
-
-    if (String(option.next || "").startsWith("final")) {
-      const targetFinal = finalMap[option.next] || null;
-      setScenarioFinal(targetFinal);
-      setView("scenario-final");
-
-      if (sessionId && targetFinal) {
-        void trackSessionEvent(sessionId, "scenario_finished", {
-          final_id: targetFinal.id,
-          risk_level: targetFinal.risk_level,
-        });
-      }
-
-      return;
-    }
-
-    setScenarioNodeId(option.next);
-=======
 
     window.setTimeout(() => {
       setScenarioPath(nextPath);
@@ -496,18 +414,10 @@ function App() {
       setScenarioNodeId(option.next);
       setIsScenarioTransitioning(false);
     }, 280);
->>>>>>> 879b184 (feat: final version)
   }
 
   function startStressCase() {
     setStressStarted(true);
-<<<<<<< HEAD
-    setStressTimeLeft(config?.stress_case?.timer_seconds || 240);
-
-    if (sessionId) {
-      void trackSessionEvent(sessionId, "stress_case_started", {
-        timer_seconds: config?.stress_case?.timer_seconds || 240,
-=======
     setMiniGameRound(0);
     setMiniGameSelections([]);
     setMiniGameLocked(false);
@@ -526,36 +436,10 @@ function App() {
     if (sessionId) {
       void trackSessionEvent(sessionId, "stress_case_started", {
         mode: "safe_spot_game",
->>>>>>> 879b184 (feat: final version)
       });
     }
   }
 
-<<<<<<< HEAD
-  function setStressAnswer(questionId, optionId) {
-    setStressAnswers((previous) => ({
-      ...previous,
-      [questionId]: optionId,
-    }));
-  }
-
-  function formatTime(seconds) {
-    const mins = Math.floor(seconds / 60)
-      .toString()
-      .padStart(2, "0");
-    const secs = (seconds % 60).toString().padStart(2, "0");
-    return `${mins}:${secs}`;
-  }
-
-  function continueToQuiz() {
-    const stressQuestions = config?.stress_case?.questions || [];
-    const answered = stressQuestions.every((item) => stressAnswers[item.id]);
-
-    if (!answered && stressTimeLeft > 0) {
-      setError(
-        "Ответьте на все пункты стресс-кейса или дождитесь окончания таймера.",
-      );
-=======
   function mapRoundAnswer(roundKey, isSafe) {
     const safeMap = {
       priority: "atrium",
@@ -655,29 +539,20 @@ function App() {
 
     if (!answeredAllRounds) {
       setError("Пройдите все раунды мини-игры перед тестом.");
->>>>>>> 879b184 (feat: final version)
       return;
     }
 
     setError("");
-<<<<<<< HEAD
-    setView("quiz");
-=======
     setView("pre-quiz");
->>>>>>> 879b184 (feat: final version)
 
     if (sessionId) {
       void trackSessionEvent(sessionId, "stress_case_submitted", {
         answers_count: Object.keys(stressAnswers).length,
-<<<<<<< HEAD
-        timer_left: stressTimeLeft,
-=======
         safe_choices: miniGameSelections.filter((item) => item?.is_safe).length,
         score: miniScore,
         bonus_score: miniBonusScore,
         total_score: miniTotalScore,
         best_combo: miniBestCombo,
->>>>>>> 879b184 (feat: final version)
       });
     }
   }
@@ -753,10 +628,6 @@ function App() {
     setScenarioPath([]);
     setScenarioFinal(null);
     setStressStarted(false);
-<<<<<<< HEAD
-    setStressTimeLeft(config?.stress_case?.timer_seconds || 240);
-    setStressAnswers({});
-=======
     setStressAnswers({});
     setMiniGameRound(0);
     setMiniGameSelections([]);
@@ -771,7 +642,6 @@ function App() {
     setMiniTimerShake(false);
     setMiniModal(null);
     setMiniEffect(null);
->>>>>>> 879b184 (feat: final version)
     setQuizIndex(0);
     setQuizAnswers({});
     setResult(null);
@@ -792,12 +662,6 @@ function App() {
               style={{ width: `${progressPercent}%` }}
             />
           </div>
-<<<<<<< HEAD
-          <small>
-            Экран {currentScreen}/{totalScreens}
-          </small>
-=======
->>>>>>> 879b184 (feat: final version)
         </header>
 
         {error && <p className="error">{error}</p>}
@@ -846,26 +710,6 @@ function App() {
 
             <section className="cta-strip">
               <div>
-<<<<<<< HEAD
-                <h3>Начать обучение сейчас</h3>
-                <p>
-                  Модуль займёт всего 5–10 минут, но знания останутся на всю
-                  жизнь.
-                </p>
-              </div>
-              <div className="cta-controls">
-                <button className="primary" onClick={() => setView("intro")}>
-                  Перейти к модулю
-                </button>
-              </div>
-            </section>
-
-            <div className="row nav">
-              <button className="secondary" type="button" disabled>
-                Ознакомительный экран
-              </button>
-            </div>
-=======
                 <h3>Введите имя и начните обучение</h3>
                 <p>
                   Модуль займёт всего 5–10 минут. Имя будет отображено в
@@ -888,7 +732,6 @@ function App() {
                 </button>
               </div>
             </section>
->>>>>>> 879b184 (feat: final version)
           </section>
         )}
 
@@ -897,13 +740,8 @@ function App() {
             <h2>Запуск модуля: «Торговый центр. Землетрясение»</h2>
             <p>
               Это практический интерактивный модуль для сотрудников ТРЦ. На
-<<<<<<< HEAD
-              следующем шаге начнётся сценарий с ветвлением, далее — стресс-кейс
-              и тест.
-=======
               следующем шаге начнётся сценарий с ветвлением, далее — мини-игра
               «Найди безопасное место» и тест.
->>>>>>> 879b184 (feat: final version)
             </p>
 
             <div className="highlights-grid">
@@ -953,8 +791,6 @@ function App() {
 
         {view === "scenario" && currentNode && (
           <section className="panel smooth scenario">
-<<<<<<< HEAD
-=======
             <div className="scenario-visual medium">
               {!scenarioImageLoaded && <div className="image-skeleton" />}
               {scenarioImageSrc ? (
@@ -968,7 +804,6 @@ function App() {
                 <div className="image-fallback">Иллюстрация загружается</div>
               )}
             </div>
->>>>>>> 879b184 (feat: final version)
             <h2>{currentNode.title}</h2>
             <p>{currentNode.text}</p>
             <div className="option-list">
@@ -976,32 +811,24 @@ function App() {
                 <button
                   key={option.id}
                   className="option"
-<<<<<<< HEAD
-=======
                   disabled={isScenarioTransitioning}
->>>>>>> 879b184 (feat: final version)
                   onClick={() => chooseScenarioOption(option)}
                 >
                   <strong>{option.id}</strong> — {option.label}
                 </button>
               ))}
             </div>
-<<<<<<< HEAD
-=======
             {isScenarioTransitioning && (
               <div className="next-step-skeleton" aria-hidden="true">
                 <div className="next-line" />
                 <div className="next-line short" />
               </div>
             )}
->>>>>>> 879b184 (feat: final version)
           </section>
         )}
 
         {view === "scenario-final" && scenarioFinal && (
           <section className="panel smooth result">
-<<<<<<< HEAD
-=======
             <div className="scenario-visual medium">
               {!finalImageLoaded && <div className="image-skeleton" />}
               {finalImageSrc ? (
@@ -1015,7 +842,6 @@ function App() {
                 <div className="image-fallback">Иллюстрация финала</div>
               )}
             </div>
->>>>>>> 879b184 (feat: final version)
             <h2>{scenarioFinal.label}</h2>
             <p>{scenarioFinal.outcome}</p>
             <p>
@@ -1024,14 +850,10 @@ function App() {
             <div className="row nav">
               <button
                 className="primary"
-<<<<<<< HEAD
-                onClick={() => setView("stress-brief")}
-=======
                 onClick={() => {
                   startStressCase();
                   setView("stress-run");
                 }}
->>>>>>> 879b184 (feat: final version)
               >
                 Перейти к стресс-кейсу
               </button>
@@ -1041,13 +863,6 @@ function App() {
 
         {view === "stress-brief" && (
           <section className="panel smooth micro">
-<<<<<<< HEAD
-            <h2>{config?.stress_case?.title}</h2>
-            <ul className="resource-list">
-              {(config?.stress_case?.context || []).map((line) => (
-                <li key={line}>{line}</li>
-              ))}
-=======
             <h2>Мини-игра: «Найди безопасное место»</h2>
             <p>
               На карте ТЦ будут анимации опасностей: падающие витрины,
@@ -1059,7 +874,6 @@ function App() {
               <li>✔ открытое пространство</li>
               <li>❌ стеклянная витрина</li>
               <li>❌ эскалатор</li>
->>>>>>> 879b184 (feat: final version)
             </ul>
             <div className="row nav">
               <button className="primary" onClick={() => setView("scenario")}>
@@ -1074,48 +888,6 @@ function App() {
 
         {view === "stress-run" && (
           <section className="panel smooth scenario">
-<<<<<<< HEAD
-            <h2>Стресс-кейс: решение за 4 минуты</h2>
-            {!stressStarted ? (
-              <div>
-                <p>
-                  Нажмите «Поехали», после чего запустится таймер и откроются
-                  вопросы.
-                </p>
-                <button className="primary" onClick={startStressCase}>
-                  Поехали
-                </button>
-              </div>
-            ) : (
-              <>
-                <p className={`timer ${stressTimeLeft <= 30 ? "danger" : ""}`}>
-                  Таймер: {formatTime(stressTimeLeft)}
-                </p>
-                {(config?.stress_case?.questions || []).map((question) => (
-                  <article key={question.id} className="panel embedded">
-                    <h3>{question.text}</h3>
-                    <div className="option-list">
-                      {(question.options || []).map((option) => (
-                        <button
-                          key={option.id}
-                          className={`option ${stressAnswers[question.id] === option.id ? "selected" : ""}`}
-                          onClick={() =>
-                            setStressAnswer(question.id, option.id)
-                          }
-                        >
-                          {option.label}
-                        </button>
-                      ))}
-                    </div>
-                  </article>
-                ))}
-                <div className="row nav">
-                  <button className="primary" onClick={continueToQuiz}>
-                    К тесту
-                  </button>
-                </div>
-              </>
-=======
             <h2>Стресс-кейс: «Найди безопасное место»</h2>
             {!stressStarted ? (
               <div>
@@ -1263,13 +1035,10 @@ function App() {
                   </div>
                 )}
               </div>
->>>>>>> 879b184 (feat: final version)
             )}
           </section>
         )}
 
-<<<<<<< HEAD
-=======
         {view === "pre-quiz" && (
           <section className="panel smooth">
             <h2>Стресс-кейс завершён</h2>
@@ -1319,7 +1088,6 @@ function App() {
           </section>
         )}
 
->>>>>>> 879b184 (feat: final version)
         {view === "quiz" && currentQuizQuestion && (
           <section className="panel smooth scenario">
             <h2>{config?.quiz?.title}</h2>
