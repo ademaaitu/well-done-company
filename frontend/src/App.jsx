@@ -653,7 +653,8 @@ function App() {
       <section className="container premium-surface fade-in">
         <header className="header">
           <h1>
-            {config?.title || "Действуй правильно: готовность сотрудников ТЦ к землетрясению"}
+            {config?.title ||
+              "Действуй правильно: готовность сотрудников ТЦ к землетрясению"}
           </h1>
           <p className="subtitle">Целевая аудитория: сотрудники ТРЦ</p>
           <div className="progress-track">
@@ -670,9 +671,7 @@ function App() {
           <section className="panel smooth landing">
             <div className="landing-hero">
               <div className="landing-copy">
-                <h2>
-                  Узнай и подготовься заранее.
-                </h2>
+                <h2>Узнай и подготовься заранее.</h2>
                 <p>
                   Интерактивный обучающий модуль поможет понять реальные угрозы,
                   проверить свои навыки и подготовиться к чрезвычайным ситуациям
