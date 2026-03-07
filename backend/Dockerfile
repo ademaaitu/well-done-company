@@ -24,7 +24,7 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader
 
 # генерируем ключ если нет
-RUN php artisan key:generate || true
+# RUN php artisan key:generate || true
 
 EXPOSE 8000
 
